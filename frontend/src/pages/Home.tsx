@@ -1,5 +1,6 @@
 import {useEffect, useState} from 'react';
 import axios from 'axios';
+import './Home.css';
 
 type Entry = {
     name: string;
@@ -41,9 +42,11 @@ export default function Home() {
         <div>
             <h2>Current Path: {path}</h2>
             <ul>
-                {path !== 'C:\\' && <li key='[..]' onClick={() => goBack()}>[..]</li>}
+                {path !== 'C:\\' && <li key='[..]' onClick={() => goBack()} className={'folder'}>[..]</li>}
                 {entries.map(e => (
-                    <li key={e.name} onClick={() => handleClick(e)}>
+                    <li key={e.name} onClick={() => handleClick(e)}
+                        className={e.isDirectory ? 'folder' : 'file'}
+                    >
                         {e.isDirectory ? `[${e.name}]` : e.name}
                     </li>
                 ))}

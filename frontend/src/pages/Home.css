@@ -1,0 +1,25 @@
+ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+li {
+    cursor: pointer;
+    margin: 4px 0;
+}
+
+.folder {
+    color: #306993;
+    cursor: pointer;
+    margin: 4px 0;
+}
+
+.folder:hover {
+    text-decoration: underline;
+}
+
+.file {
+    color: black;
+    cursor: default;
+    margin: 4px 0;
+}
