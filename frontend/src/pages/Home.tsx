@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
-import axios from 'axios';
 import './Home.css';
+import {fetchFolder, createFolder} from '../services/folderService';
 
 type Entry = {
     name: string;
@@ -11,31 +11,41 @@ export default function Home() {
     const [path, setPath] = useState('C:\\');
     const [entries, setEntries] = useState<Entry[]>([]);
 
-    const fetchData = async (targetPath: string) => {
+    const load = async (targetPath: string) => {
         try {
-            const res = await axios.get('http://localhost:3001/api/explore', {
-                params: {path: targetPath}
-            });
-            setPath(res.data.path);
-            setEntries(res.data.entries);
-        } catch (err) {
-            alert('Error reading folder');
+            const res = await fetchFolder(targetPath);
+            setPath(res?.data?.path);
+            setEntries(res?.data?.entries);
+        } catch {
+            alert('Failed to read folder');
         }
     };
 
     useEffect(() => {
-        fetchData(path);
+        load(path);
     }, []);
 
     const handleClick = (entry: Entry) => {
         if (entry.isDirectory) {
-            fetchData(path + '\\' + entry.name);
+            const newPath = path + '\\' + entry.name;
+            load(newPath);
         }
     };
 
     const goBack = () => {
-        const parent = path.split('\\').slice(0, -1).join('\\') || 'C:\\';
-        fetchData(parent);
+        const parent = path.split('\\').slice(0, -1).join('\\');
+        load(parent);
+    };
+
+    const handleCreateFolder = async () => {
+        const name = prompt('Enter new folder name:');
+        if (!name) return;
+        try {
+            await createFolder(path, name);
+            load(path);
+        } catch {
+            alert('Could not create folder');
+        }
     };
 
     return (
@@ -51,6 +61,7 @@ export default function Home() {
                     </li>
                 ))}
             </ul>
+            <button onClick={handleCreateFolder}>New Folder</button>
         </div>
     );
 }
