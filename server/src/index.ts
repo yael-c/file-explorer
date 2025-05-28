@@ -1,23 +1,24 @@
 import express from 'express';
-import mongoose from 'mongoose';
 import cors from 'cors';
-import dotenv from 'dotenv';
-import { json } from 'body-parser';
-import apiRouter from './routes';
-import { errorHandler } from './middleware/errorHandler';
+import fs from 'fs';
 
-dotenv.config();
 const app = express();
+const PORT = 3001;
+
 app.use(cors());
-app.use(json());
 
-const PORT = process.env.PORT || 5000;
+app.get('/api/explore', (req, res) => {
+    const targetPath = req.query.path as string || 'C:\\';
+    try {
+        const entries = fs.readdirSync(targetPath, {withFileTypes: true});
+        const result = entries.map(entry => ({
+            name: entry.name,
+            isDirectory: entry.isDirectory()
+        }));
+        res.json({path: targetPath, entries: result});
+    } catch (err) {
+        res.status(500).json({error: `Cannot access path: ${targetPath}`});
+    }
+});
 
-mongoose.connect(process.env.MONGO_URI!, {})
-    .then(() => console.log('MongoDB connected'))
-    .catch(err => console.error('MongoDB error:', err));
-
-app.use('/api', apiRouter);
-app.use(errorHandler);
-
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
