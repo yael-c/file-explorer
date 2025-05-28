@@ -41,7 +41,7 @@ export default function Home() {
         <div>
             <h2>Current Path: {path}</h2>
             <ul>
-                <li key='[..]' onClick={() => goBack()}>[..]</li>
+                {path !== 'C:\\' && <li key='[..]' onClick={() => goBack()}>[..]</li>}
                 {entries.map(e => (
                     <li key={e.name} onClick={() => handleClick(e)}>
                         {e.isDirectory ? `[${e.name}]` : e.name}
